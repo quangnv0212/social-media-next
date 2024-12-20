@@ -1820,3 +1820,29 @@ html[dir="rtl"] .react-select .select__loading-indicator {
 .dash-tail-app .shepherd-button {
   margin-right: 0.5rem;
 }
+.stories-swiper .swiper-button-next,
+.stories-swiper .swiper-button-prev {
+  color: #333;
+  background: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stories-swiper .swiper-button-next:after,
+.stories-swiper .swiper-button-prev:after {
+  font-size: 14px;
+}
+
+.stories-swiper .swiper-button-disabled {
+  opacity: 0;
+}
+
+/* Ẩn navigation buttons trên mobile */
+@media (max-width: 640px) {
+  .stories-swiper .swiper-button-next,
+  .stories-swiper .swiper-button-prev {
+    display: none;
+  }
+}

@@ -12,8 +12,6 @@ const DashBoardLayoutProvider = ({
 }) => {
   const { collapsed } = useSidebar();
   const { isAuth, user } = useAppStore();
-  console.log(isAuth);
-  console.log(user);
 
   return (
     <>
