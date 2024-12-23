@@ -6,9 +6,6 @@ import {
   setAccessTokenToLocalStorage,
   setRefreshTokenToLocalStorage,
 } from "@/lib/utils";
-import { LoginResType } from "@/schemaValidations/auth.schema";
-import Cookies from "js-cookie";
-import { redirect } from "next/navigation";
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
 };
@@ -111,6 +108,7 @@ const request = async <Response>(
     status: res.status,
     payload,
   };
+
   if (isClient) {
     const normalizedPath = normalizePath(url);
     if (["api/auth/login"].includes(normalizedPath)) {

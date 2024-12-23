@@ -75,15 +75,16 @@ export function PostItem({
           {content}
         </p>
       )}
-
+      {image && (
+        <div className="relative aspect-square">
+          <img
+            src={image}
+            alt="Post"
+            className="absolute inset-0 w-full h-full object-cover rounded-lg"
+          />
+        </div>
+      )}
       {/* Post Image */}
-      <div className="relative aspect-square">
-        <img
-          src={image}
-          alt="Post"
-          className="absolute inset-0 w-full h-full object-cover rounded-lg"
-        />
-      </div>
 
       {/* Post Actions */}
       <CardContent className="p-4 border-t border-border dark:border-border">

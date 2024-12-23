@@ -1,27 +1,38 @@
 import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { Control, useController } from "react-hook-form";
 
 interface ImageUploaderProps {
   maxFiles?: number;
   maxSize?: number; // in bytes
   className?: string;
-  onChange?: (files: File[]) => void;
+  control: Control<
+    {
+      content: string;
+      media?: any[] | undefined;
+    },
+    any
+  >;
 }
 
 export function ImageUploader({
   maxFiles = 4,
   maxSize = 5 * 1024 * 1024, // 5MB default
   className,
-  onChange,
+  control,
 }: ImageUploaderProps) {
-  const [files, setFiles] = useState<Array<File & { preview: string }>>([]);
-
+  const {
+    field: { value = [], onChange },
+  } = useController({
+    control,
+    name: "media",
+  });
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (files.length + acceptedFiles.length > maxFiles) {
+      if (value.length + acceptedFiles.length > maxFiles) {
         alert(`You can only upload up to ${maxFiles} files`);
         return;
       }
@@ -32,13 +43,9 @@ export function ImageUploader({
         })
       );
 
-      setFiles((prev) => {
-        const updated = [...prev, ...newFiles];
-        onChange?.(updated);
-        return updated;
-      });
+      onChange?.(newFiles);
     },
-    [files.length, maxFiles, onChange]
+    [value.length, maxFiles, onChange]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -51,11 +58,7 @@ export function ImageUploader({
   });
 
   const removeFile = (fileToRemove: File) => {
-    setFiles((files) => {
-      const updated = files.filter((file) => file !== fileToRemove);
-      onChange?.(updated);
-      return updated;
-    });
+    onChange?.(value.filter((file: any) => file !== fileToRemove));
   };
 
   return (
@@ -85,9 +88,9 @@ export function ImageUploader({
         </div>
       </div>
 
-      {files.length > 0 && (
+      {value.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {files.map((file) => (
+          {value.map((file: any) => (
             <div key={file.name} className="relative group aspect-square">
               <Image
                 src={file.preview}

@@ -7,15 +7,48 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
-import { Textarea } from "../ui/textarea";
-import { ImageUploader } from "./image-uploader";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { useCreatePostMutation } from "@/queries/usePost";
+import { CreatePostBodyType } from "@/schemaValidations/post.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useAppStore } from "../providers/app-provider";
 import { Avatar, AvatarImage } from "../ui/avatar";
-
+import { Textarea } from "../ui/textarea";
+import { toast } from "../ui/use-toast";
+import { ImageUploader } from "./image-uploader";
 export function DialogDemo() {
+  const form = useForm<CreatePostBodyType>({
+    resolver: zodResolver(CreatePostBodyType),
+  });
   const [open, setOpen] = useState(false);
   const { user } = useAppStore();
+  const createPostMutation = useCreatePostMutation();
+  const queryClient = useQueryClient();
+  const onSubmit = async (data: CreatePostBodyType) => {
+    await createPostMutation.mutateAsync(data);
+    await queryClient.invalidateQueries({ queryKey: ["posts"] });
+    setOpen(false);
+    form.reset();
+  };
+  useEffect(() => {
+    if (createPostMutation.data) {
+      toast({
+        title: "Post created successfully",
+        description: createPostMutation.data?.payload?.message,
+      });
+    }
+  }, [createPostMutation.data]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -57,19 +90,77 @@ export function DialogDemo() {
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (e) => {
+              console.log(e);
+              console.log(form.getValues());
+            })}
+          >
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder={`What's on your mind, ${user?.name}?`}
+                      className="border-none focus:ring-0"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="media"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <ImageUploader control={form.control} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              disabled={createPostMutation.isPending}
+              type="submit"
+              className="w-full mt-4"
+            >
+              {createPostMutation.isPending ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Create Post"
+              )}
+            </Button>
+          </form>
+        </Form>
+        {/* <div className="grid gap-4 py-4">
           <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder={`What's on your mind, ${user?.name}?`}
             className="border-none focus:ring-0"
           />
         </div>
-        <ImageUploader />
-
+        <ImageUploader files={files} setFiles={setFiles} />
         <DialogFooter>
-          <Button type="submit" className="w-full">
-            Create Post
+          <Button
+            disabled={createPostMutation.isPending}
+            onClick={onSubmit}
+            className="w-full"
+          >
+            {createPostMutation.isPending ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Create Post"
+            )}
           </Button>
-        </DialogFooter>
+        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );
