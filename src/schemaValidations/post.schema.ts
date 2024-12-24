@@ -8,6 +8,15 @@ export const CreatePostBodyType = z
   .strict();
 export type CreatePostBodyType = z.TypeOf<typeof CreatePostBodyType>;
 
+export const EditPostBodyType = z
+  .object({
+    content: z.string().min(1, { message: "required" }),
+    media: z.array(z.any()).optional(),
+    postId: z.string().min(1, { message: "required" }),
+  })
+  .strict();
+export type EditPostBodyType = z.TypeOf<typeof EditPostBodyType>;
+
 export const CreatePostRes = z.object({
   status: z.number(),
   payload: z.object({
@@ -39,3 +48,11 @@ export const GetPostsRes = z.object({
   }),
 });
 export type GetPostsResType = z.TypeOf<typeof GetPostsRes>;
+
+export const DeletePostRes = z.object({
+  status: z.number(),
+  payload: z.object({
+    data: z.any(),
+  }),
+});
+export type DeletePostResType = z.TypeOf<typeof DeletePostRes>;

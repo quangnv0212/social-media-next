@@ -1,5 +1,4 @@
 import HomePage from "@/components/home-page";
-import Sidebar from "@/components/partials/sidebar";
 import ProMembers from "@/components/user/pro-members";
 import Product from "@/components/user/product";
 import Stories from "@/components/user/stories";

@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,7 +16,6 @@ import {
 import { useCreatePostMutation } from "@/queries/usePost";
 import { CreatePostBodyType } from "@/schemaValidations/post.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,10 +31,8 @@ export function DialogDemo() {
   const [open, setOpen] = useState(false);
   const { user } = useAppStore();
   const createPostMutation = useCreatePostMutation();
-  const queryClient = useQueryClient();
   const onSubmit = async (data: CreatePostBodyType) => {
     await createPostMutation.mutateAsync(data);
-    await queryClient.invalidateQueries({ queryKey: ["posts"] });
     setOpen(false);
     form.reset();
   };
